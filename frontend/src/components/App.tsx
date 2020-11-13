@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route ,Switch  } from "react-router-dom";
-import Login from "./login";
-import Home from "./Home";
+import Login from "./Login";
 import Orders from "./Orders";
 import OrderDetails from "./OrderDetails";
 import { AuthProvider } from "../contexts/AuthContext";
@@ -18,8 +17,7 @@ const App = () => {
           {/* <Route exact path="/orders" component={Orders} /> */}
           <PrivateRoute exact path="/orders" component={Orders} /> 
           {/* <PrivateRoute exact path="/orders" component={Orders} /> */}
-          <PrivateRoute exact path="/order/:id" component={OrderDetails} />
-          <PrivateRoute path="/" component={Home} />
+          <PrivateRoute exact path="/order/:id?" component={OrderDetails} />
         </Switch>
       </Router>
     </AuthProvider>

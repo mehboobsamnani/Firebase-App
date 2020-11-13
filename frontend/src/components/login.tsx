@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import app from "../firebase";
+import app from "../services/firestore";
 import { AuthContext } from "../contexts/AuthContext";
 import { UserDetails } from "../types";
 
@@ -45,7 +45,7 @@ const LogIn = ({ history }: RouteComponentProps) => {
       const { username, password } = userDetails;
       try {
         await app.auth().signInWithEmailAndPassword(username, password);
-        history.push("/");
+        history.push("/orders");
       } catch (error) {
         console.log(error);
       }
@@ -55,9 +55,9 @@ const LogIn = ({ history }: RouteComponentProps) => {
 
   const { currentUser } : any = useContext(AuthContext);
 
-  // if (currentUser) {
-  //   return <Redirect to="/" />;
-  // }
+  if (currentUser) {
+    return <Redirect to="/orders" />;
+  }
 
   const handleChange = (inputType: string, value: string) => {
     setUserDetails({

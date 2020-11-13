@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
-import app from '../firebase';
+import app from '../services/firestore';
 
 export const AuthContext = createContext({});
 
@@ -12,7 +12,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<any>(null);
 
  useEffect(()=> {
-    app.auth().onAuthStateChanged(setCurrentUser);
+   const unsubsribe = app.auth().onAuthStateChanged(user => setCurrentUser(user));
+   return unsubsribe;
  },[]);
 
   return (
