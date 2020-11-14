@@ -34,7 +34,7 @@ const OrdersDetails = () => {
   const classes = useStyles();
   const [order, setOrder] = useState<Order>({
     title: "",
-    bookingDate: new Date(),
+    bookingDate: null,
     customer: {
       name: "",
       email: "",

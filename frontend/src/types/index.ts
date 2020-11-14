@@ -18,7 +18,12 @@ export interface Customer {
 export interface Order {
    id?: string;
    title : string;
-   bookingDate: Date;
+   bookingDate: number | Timestamp;
    address : Address;
    customer: Customer;
+}
+
+export interface Timestamp {
+    nanoseconds: number
+    seconds: number
 }

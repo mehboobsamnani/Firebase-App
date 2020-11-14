@@ -45,7 +45,7 @@ const LogIn = ({ history }: RouteComponentProps) => {
       const { username, password } = userDetails;
       try {
         await app.auth().signInWithEmailAndPassword(username, password);
-        history.push("/orders");
+        history.push("/");
       } catch (error) {
         console.log(error);
       }
@@ -56,7 +56,7 @@ const LogIn = ({ history }: RouteComponentProps) => {
   const { currentUser } : any = useContext(AuthContext);
 
   if (currentUser) {
-    return <Redirect to="/orders" />;
+    return <Redirect to="/" />;
   }
 
   const handleChange = (inputType: string, value: string) => {

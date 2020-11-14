@@ -15,7 +15,7 @@ const App = () => {
           <PrivateRoute exact path="/order:id" component={OrderDetails} /> */}
           <Route exact path="/login" component={Login} />
           {/* <Route exact path="/orders" component={Orders} /> */}
-          <PrivateRoute exact path="/orders" component={Orders} /> 
+          <PrivateRoute exact path="/" component={Orders} /> 
           {/* <PrivateRoute exact path="/orders" component={Orders} /> */}
           <PrivateRoute exact path="/order/:id?" component={OrderDetails} />
         </Switch>
