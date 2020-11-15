@@ -1,3 +1,4 @@
+import firebase from 'firebase';
 export interface UserDetails {
     username: string;
     password: string;
@@ -16,14 +17,28 @@ export interface Customer {
     phone: string;
 }
 export interface Order {
-   id?: string;
-   title : string;
-   bookingDate: number | Timestamp;
-   address : Address;
-   customer: Customer;
+    id?: string;
+    title: string;
+    bookingDate : number | firebase.firestore.Timestamp; 
+    address: Address;
+    customer: Customer;
 }
 
 export interface Timestamp {
     nanoseconds: number
     seconds: number
+}
+
+export interface ISignInForm {
+    password: string;
+    email: string;
+}
+
+export interface IFormStatus {
+    message: string;
+    type: string;
+}
+
+export interface IFormStatusProps {
+    [key: string]: IFormStatus;
 }

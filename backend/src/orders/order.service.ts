@@ -23,23 +23,33 @@ export class OrderService {
 
   async createOrder(order: CreateOrder): Promise<string> {
     console.log(order);
-    return firebase.firestore().collection("orders").add({...order})
-      .then(function () {
-        return "Document successfully updated!";
-      })
-      .catch(function (error) {
-        return `Error creating order: ${error}`;
-      });
+    return "";
+    // try {
+    // return firebase.firestore().collection("orders").add({...order})
+    //   .then(function () {
+    //     return "Document successfully updated!";
+    //   })
+    //   .catch(function (error) {
+    //     return `Error creating order: ${error}`;
+    //   });
+    // } catch(error) {
+    //   return `Error creating order`;
+    // }
   }
 
   async updateOrder(id: string, orderDetail: UpdateOrder): Promise<string> {
     let bookingDate = new Date(orderDetail.bookingDate * 1000);
     console.log(bookingDate);
-    let docRef = await ordersRef.doc(id).update({...orderDetail,bookingDate}).then(function () {
-      return "Document successfully updated!";
-    }).catch(function (error) {
-      return `Error updating order: ${error}`;
-    });
-    return docRef;
+    try {
+      let docRef = await ordersRef.doc(id).update({...orderDetail,bookingDate}).then(function () {
+        return "Document successfully updated!";
+      }).catch(function (error) {
+        return `Error updating order: ${error}`;
+      });
+      return docRef;
+    } catch(error) {
+      return `Error updating order`;
+    }
+    
   }
 }

@@ -14,10 +14,13 @@ const app = firebase.initializeApp({
 });
 
 let orderRef = firebase.firestore().collection("orders");
-let userRef = firebase.firestore().collection("users");
+
 const getOrders = async () => {
     let orders = await orderRef.get();
-    return orders.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+   
+    return orders.docs.map(doc => {
+        return ({ ...doc.data(), id: doc.id })
+    });
 };
 
 const getUser = async () => {

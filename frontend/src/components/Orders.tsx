@@ -6,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-
 import {
   Table,
   TableContainer,
@@ -36,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
 const Orders = () => {
   const classes = useStyles();
   const [ordersList, setOrdersList]: any = useState([]);
-
+  let history = useHistory();
+  
   useEffect(() => {
     const fetchOrders = async () => {
       const orders = await getOrders();
@@ -44,7 +44,7 @@ const Orders = () => {
     };
     fetchOrders();
   }, []);
-  let history = useHistory();
+ 
   const redirectToOrder = (id: string = "") => {
     history.push(`/order/${id}`);
   };

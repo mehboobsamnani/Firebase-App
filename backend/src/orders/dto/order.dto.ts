@@ -65,9 +65,11 @@ export class CreateOrder {
 
     @ValidateNested()
     @IsNotEmpty()
+    @Type(() => Customer)
     readonly customer: Customer;
 
     @ValidateNested()
+    @Type(() => Address)
     @IsNotEmpty()
     readonly address: Address;
 }
