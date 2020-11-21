@@ -1,24 +1,26 @@
 # coding-challenge
 Project Repo comprises of two part frontend and backend.
 
-##Frontend
-###Technology
+## Frontend
+### Technology
 - [React](https://create-react-app.dev/docs/adding-typescript/)
 - [Formik](https://github.com/formium/formik)
 - [Material UI](https://material-ui.com/)
 - [Firestore](https://firebase.google.com/docs/firestore/quickstart)
 ## Setup
 ```bash
+cd frontend
 npm install
 npm run start
 ```
 open http://localhost:3000 in your browser
 
-##Backend
-###Technology
+## Backend
+### Technology
 - [NestJS](https://docs.nestjs.com/)
 ## Setup
 ```bash
+cd backend
 npm install
 npm run start
 ```
