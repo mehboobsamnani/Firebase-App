@@ -19,7 +19,7 @@ export interface Customer {
 export interface Order {
     id?: string;
     title: string;
-    bookingDate : number | firebase.firestore.Timestamp; 
+    bookingDate: number | firebase.firestore.Timestamp;
     address: Address;
     customer: Customer;
 }
@@ -36,9 +36,14 @@ export interface ISignInForm {
 
 export interface IFormStatus {
     message: string;
-    type: string;
+    type?: Types;
 }
-
+export enum Types {
+    success = "success",
+    error = "error",
+    info = "info",
+    warning = "warning",
+}
 export interface IFormStatusProps {
     [key: string]: IFormStatus;
 }

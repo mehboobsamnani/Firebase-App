@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import app from "../services/firestore";
 import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
-import { IFormStatus, IFormStatusProps, ISignInForm } from "../types";
+import { IFormStatus, IFormStatusProps, ISignInForm, Types } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const formStatusProps: IFormStatusProps = {
   error: {
     message: "Something went wrong. Please try again.",
-    type: "error",
+    type: Types.error,
   },
 };
 
@@ -48,7 +48,7 @@ const SignIn = ({ history }: RouteComponentProps) => {
   const [displayFormStatus, setDisplayFormStatus] = useState(false);
   const [formStatus, setFormStatus] = useState<IFormStatus>({
     message: "",
-    type: "",
+    type: Types.success,
   });
 
   const { currentUser }: any = useContext(AuthContext);

@@ -1,17 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import * as firebase from 'firebase-admin'
-import firebaseAccountCredentials from '../../serviceAccountKey.json'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateOrder, UpdateOrder } from './dto/order.dto';
-
-const serviceAccount = firebaseAccountCredentials as firebase.ServiceAccount
-
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://construyo-coding-challenge.firebaseio.com'
-})
-const ordersRef = firebase
-  .firestore()
-  .collection("orders");
+import { ordersRef } from '../service/firebase';
 
 @Injectable()
 export class OrderService {
@@ -23,32 +12,32 @@ export class OrderService {
 
   async createOrder(order: CreateOrder): Promise<string> {
     console.log(order);
-    return "";
-    // try {
-    // return firebase.firestore().collection("orders").add({...order})
-    //   .then(function () {
-    //     return "Document successfully updated!";
-    //   })
-    //   .catch(function (error) {
-    //     return `Error creating order: ${error}`;
-    //   });
-    // } catch(error) {
-    //   return `Error creating order`;
-    // }
+   
+    try {
+    return ordersRef.add({...order})
+      .then(function () {
+        return "Order successfully created!";
+      })
+      .catch(function (error) {
+        throw new HttpException('Error updating order', HttpStatus.BAD_REQUEST);
+      });
+    } catch(error) {
+      throw new HttpException('Error updating order', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async updateOrder(id: string, orderDetail: UpdateOrder): Promise<string> {
     let bookingDate = new Date(orderDetail.bookingDate * 1000);
-    console.log(bookingDate);
+   
     try {
       let docRef = await ordersRef.doc(id).update({...orderDetail,bookingDate}).then(function () {
-        return "Document successfully updated!";
+        return "Order successfully updated!";
       }).catch(function (error) {
-        return `Error updating order: ${error}`;
+        throw new HttpException('Error updating order', HttpStatus.BAD_REQUEST);
       });
       return docRef;
     } catch(error) {
-      return `Error updating order`;
+      throw new HttpException('Error updating order', HttpStatus.BAD_REQUEST);
     }
     
   }

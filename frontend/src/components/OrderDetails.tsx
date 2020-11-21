@@ -10,11 +10,12 @@ import {
   Typography,
   Container,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab/";
 import { Formik, Form, FormikProps } from "formik";
 import * as Yup from "yup";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
-import { IFormStatus, IFormStatusProps, Order } from "../types";
+import { IFormStatus, IFormStatusProps, Order, Types } from "../types";
 import { getFormattedDate, phoneRegExp } from "../utils";
 import Header from "./Header";
 import Axios from "axios";
@@ -37,6 +38,9 @@ const useStyles = makeStyles((theme: Theme) =>
     heroContent: {
       padding: theme.spacing(8, 0, 6),
     },
+    button: {
+      marginRight: theme.spacing(2),
+    },
     title: { textAlign: "center" },
     successMessage: { color: "green" },
     errorMessage: { color: "red" },
@@ -46,17 +50,17 @@ const useStyles = makeStyles((theme: Theme) =>
 const formStatusProps: IFormStatusProps = {
   error: {
     message: "Something went wrong. Please try again.",
-    type: "error",
+    type: Types.error,
   },
 };
 
 const SignIn = ({ history, match }: RouteComponentProps) => {
   const classes = useStyles();
-  let { id = '' } : any  = match.params;
+  let { id = "" }: any = match.params;
   const [displayFormStatus, setDisplayFormStatus] = useState(false);
   const [formStatus, setFormStatus] = useState<IFormStatus>({
     message: "",
-    type: "",
+    type: Types.success,
   });
   const [order, setOrder] = useState<Order>({
     title: "",
@@ -81,12 +85,12 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
       };
       fetchOrderDetail();
     }
-  }, [order]);
+  }, []);
   const isExisting = useMemo(() => {
     return !!id;
   }, [id]);
 
-  const redirectToOrders = () => history.push(`/`)
+  const redirectToOrders = () => history.push(`/`);
 
   const { currentUser }: any = useContext(AuthContext);
 
@@ -101,52 +105,62 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
           color="textPrimary"
           gutterBottom
         >
-          {order.title}
+          {order?.title}
         </Typography>
       </Container>
       <Container maxWidth="md" component="main">
         <Formik
           enableReinitialize={true}
           initialValues={order}
-          onSubmit={ async (values: Order, actions) => {
+          onSubmit={async (values: Order, actions) => {
+            
+            let url = `orders`;
+            let payload: any = values;
             if (isExisting) {
-              try {
-           
-                let bookingDate = order.bookingDate.toString();
-               
-                let res = await Axios.put(`orders/${id}`, {
-                  title: order.title,
-                  bookingDate: new Date(bookingDate).getTime() / 1000,
-                });
-        
-              } catch (e) {}
-            } else {
-              let res = await Axios.post(`orders`, order);
+              let bookingDate = getFormattedDate(values.bookingDate).toString();
+              payload = {
+                title: order.title,
+                bookingDate: new Date(bookingDate).getTime() / 1000,
+              };
+              url = `orders/${id}`;
             }
-            setTimeout(() => {
-              actions.setSubmitting(false);
-            }, 500);
+            try {
+              let res = isExisting ? await Axios.put(url, payload) : await Axios.post(url, payload) ;
+              setFormStatus({
+                message: res.data,
+                type: Types.success,
+              });
+            } catch (e) {
+              setFormStatus({
+                message: e.response.data.message.join(","),
+                type: Types.error,
+              });
+            }
+            setDisplayFormStatus(true);
+            actions.setSubmitting(false);
           }}
           validationSchema={Yup.object().shape({
             title: Yup.string().min(3).required("Atleast 3 Character long"),
             bookingDate: Yup.string().required(),
-            customer: Yup.object().shape({
-              name: Yup.string().required(),
-              email: Yup.string().email().required("Enter valid email address"),
-              phone: Yup.string().matches(
-                phoneRegExp,
-                "Phone number is not valid"
-              ),
-            }),
-            address: Yup.object().when( id , {
-              is: !id,
-              then: Yup.object().shape({
-                street: Yup.string().required(),
-                zip: Yup.string().required(),
-                city: Yup.string().required(),
-                country: Yup.string().required()
-              }),
-            })
+            ...(!id
+              ? {
+                  customer: Yup.object({
+                    name: Yup.string().required(),
+                    email: Yup.string()
+                      .email()
+                      .required("Enter valid email address"),
+                    phone: Yup.string()
+                      .required()
+                      .matches(phoneRegExp, "Phone number is not valid"),
+                  }),
+                  address: Yup.object().shape({
+                    street: Yup.string().required(),
+                    zip: Yup.string().required(),
+                    city: Yup.string().required(),
+                    country: Yup.string().required(),
+                  }),
+                }
+              : {}),
           })}
         >
           {(props: FormikProps<Order>) => {
@@ -162,6 +176,11 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
               <Form>
                 <Grid container justify="space-around" direction="row">
                   <Grid item xs={10} className={classes.textField}>
+                    {displayFormStatus && (
+                      <Alert severity={formStatus.type}>
+                        {formStatus.message}
+                      </Alert>
+                    )}
                     <TextField
                       name="title"
                       id="title"
@@ -169,7 +188,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       variant="outlined"
                       label="Title"
                       fullWidth
-                      value={values.title}
+                      value={values?.title}
                       type="text"
                       helperText={
                         errors.title && errors.title ? errors.title : ""
@@ -178,6 +197,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
+
                     <TextField
                       name="bookingDate"
                       id="bookingDate"
@@ -185,7 +205,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       variant="outlined"
                       label="Booking Date"
                       fullWidth
-                      value={getFormattedDate(values.bookingDate, "input")}
+                      value={getFormattedDate(values?.bookingDate, "input")}
                       helperText={
                         errors.bookingDate && errors.bookingDate
                           ? errors.bookingDate
@@ -203,7 +223,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       id="customer.name"
                       margin="normal"
                       variant="outlined"
-                      label="Customer Name"
+                      label="Name"
                       fullWidth
                       value={values?.customer?.name}
                       type="text"
@@ -226,7 +246,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       margin="normal"
                       variant="outlined"
                       label="Email Address"
-                      value={values.customer.email}
+                      value={values?.customer?.email}
                       type="email"
                       helperText={
                         errors.customer?.email && errors.customer?.email
@@ -246,7 +266,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       id="customer.phone"
                       margin="normal"
                       variant="outlined"
-                      label="Customer Phone Number"
+                      label="Phone Number"
                       fullWidth
                       value={values?.customer?.phone}
                       type="text"
@@ -293,7 +313,7 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       variant="outlined"
                       label="Zip Code"
                       fullWidth
-                      value={values?.address.zip}
+                      value={values?.address?.zip}
                       type="text"
                       helperText={
                         errors.address?.zip && errors.address?.zip
@@ -366,31 +386,19 @@ const SignIn = ({ history, match }: RouteComponentProps) => {
                       type="button"
                       variant="contained"
                       onClick={redirectToOrders}
+                      className={classes.button}
                     >
                       Back
                     </Button>
                     <Button
+                      className={classes.button}
                       type="submit"
-                      
                       variant="contained"
                       color="primary"
                       disabled={isSubmitting}
                     >
                       Submit
                     </Button>
-                    {displayFormStatus && (
-                      <div className="formStatus">
-                        {formStatus.type === "error" ? (
-                          <p className={classes.errorMessage}>
-                            {formStatus.message}
-                          </p>
-                        ) : formStatus.type === "success" ? (
-                          <p className={classes.successMessage}>
-                            {formStatus.message}
-                          </p>
-                        ) : null}
-                      </div>
-                    )}
                   </Grid>
                 </Grid>
               </Form>
